@@ -1,7 +1,3 @@
-Perfect 👍 I’ll give you a **ready-to-use README.md** — just copy-paste this file into your repo and commit it.
-
-Here it is:
-
 ````markdown
 # 🌦️ Weather Health Alert System  
 
