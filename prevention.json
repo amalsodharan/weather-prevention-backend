@@ -1,0 +1,40 @@
+{
+  "Heat stroke risk": ["Stay hydrated", "Avoid direct sunlight", "Wear light clothes"],
+  "Dehydration risk": ["Drink plenty of water", "Avoid alcohol/caffeine"],
+  "Risk of heat exhaustion": ["Rest in shade", "Cool down with wet cloths"],
+  "Cold & flu risk": ["Wear warm clothes", "Avoid crowded areas"],
+  "Hypothermia risk": ["Wear multiple warm layers", "Avoid prolonged exposure"],
+  "Frostbite risk": ["Wear gloves & socks", "Keep extremities warm"],
+  
+  "Risk of fungal infections": ["Keep skin dry", "Wear breathable clothes"],
+  "Asthma aggravation": ["Keep inhaler handy", "Avoid outdoor activity", "Use prescribed inhaler", "Stay indoors"],
+  "Skin irritation risk": ["Moisturize regularly", "Avoid harsh soaps"],
+  "Respiratory discomfort": ["Use air purifier", "Stay indoors if possible"],
+  "Dry skin issues": ["Apply moisturizer", "Avoid long hot showers"],
+
+  "High UV risk, wear sunscreen": ["Apply SPF 30+ sunscreen", "Wear sunglasses & hat"],
+  "Risk of waterborne diseases": ["Drink boiled/filtered water", "Wash hands before eating"],
+  "Mosquito breeding increases": ["Use mosquito repellents", "Avoid stagnant water nearby"],
+  "Lightning hazard": ["Stay indoors", "Avoid open fields"],
+  "Asthma may worsen": ["Avoid outdoor activity", "Take prescribed medication"],
+  "Low visibility accidents": ["Use fog lights", "Avoid driving in heavy fog"],
+  "Respiratory problems": ["Wear mask outdoors", "Limit outdoor exposure"],
+  "Allergy & asthma risk": ["Close windows", "Take anti-allergy medication"],
+  "Mild seasonal flu risk": ["Eat healthy", "Take Vitamin C"],
+  "General flu & cold risk": ["Wear a mask", "Wash hands often"],
+  "Possible mild allergy risk": ["Avoid dust exposure", "Keep surroundings clean"],
+  "Respiratory discomfort for sensitive people": ["Stay indoors", "Avoid exertion"],
+  "Vitamin D deficiency risk (long-term)": ["Spend safe time in sunlight", "Take Vitamin D supplements"],
+
+  "Risk of flying debris injuries": ["Stay indoors", "Secure loose objects outside"],
+  "Dust allergy & asthma risk": ["Wear N95 mask", "Use air purifier"],
+
+  "Skin burn risk": ["Apply sunscreen", "Wear protective clothing"],
+  "Eye damage risk": ["Wear UV-protection sunglasses", "Avoid staring at the sun"],
+  "Use sunscreen": ["Reapply sunscreen every 2 hours", "Avoid 12-3 PM sun"],
+  "Avoid outdoor exposure": ["Stay indoors during peak UV hours"],
+
+  "Severe respiratory risk": ["Use N95 mask", "Avoid outdoor exertion"],
+  "Heart disease risk": ["Avoid pollution exposure", "Follow prescribed medicines"],
+  "Cough & throat irritation": ["Drink warm fluids", "Avoid smoke & dust"]
+}

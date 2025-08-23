@@ -1,0 +1,38 @@
+{
+  "temperature": {
+    "very_high": { "threshold": 40, "alerts": ["Heat stroke risk", "Dehydration risk"] },
+    "high": { "threshold": 30, "alerts": ["Risk of heat exhaustion", "Stay hydrated"] },
+    "moderate_cold": { "threshold": 10, "alerts": ["Cold & flu risk"] },
+    "very_cold": { "threshold": 0, "alerts": ["Hypothermia risk", "Frostbite risk"] }
+  },
+  "humidity": {
+    "very_high": { "threshold": 90, "alerts": ["Risk of fungal infections", "Asthma aggravation"] },
+    "high": { "threshold": 70, "alerts": ["Skin irritation risk", "Respiratory discomfort"] },
+    "low": { "threshold": 30, "alerts": ["Dehydration risk", "Dry skin issues"] }
+  },
+  "conditions": {
+    "clear": ["High UV risk, wear sunscreen"],
+    "rain": ["Risk of waterborne diseases", "Mosquito breeding increases"],
+    "thunderstorm": ["Lightning hazard", "Asthma may worsen"],
+    "snow": ["Frostbite risk", "Road accident risk"],
+    "fog": ["Low visibility accidents", "Respiratory problems"],
+    "haze": ["Allergy & asthma risk"],
+    "clouds": ["Mild seasonal flu risk"],
+    "scattered clouds": ["General flu & cold risk"],
+    "few clouds": ["Possible mild allergy risk"],
+    "broken clouds": ["Respiratory discomfort for sensitive people"],
+    "overcast clouds": ["Vitamin D deficiency risk (long-term)"]
+  },
+  "wind": {
+    "very_high": { "threshold": 20, "alerts": ["Risk of flying debris injuries"] },
+    "high": { "threshold": 10, "alerts": ["Dust allergy & asthma risk"] }
+  },
+  "uv_index": {
+    "very_high": { "threshold": 8, "alerts": ["Skin burn risk", "Eye damage risk"] },
+    "high": { "threshold": 6, "alerts": ["Use sunscreen", "Avoid outdoor exposure"] }
+  },
+  "air_quality": {
+    "very_poor": { "aqi": 200, "alerts": ["Severe respiratory risk", "Heart disease risk"] },
+    "poor": { "aqi": 100, "alerts": ["Asthma aggravation", "Cough & throat irritation"] }
+  }
+}
