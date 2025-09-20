@@ -5,6 +5,7 @@ import cors from 'cors';
 dotenv.config();
 
 import weatherController from './controller/weatherController.js';
+import newWeatherController from './controller/newWeatherController.js';
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.get('/api', (req, res) => {
 });
 
 app.post('/api/weather', weatherController.weatherController);
+
+app.post('/api/newweather', newWeatherController.weatherController);
 
 app.listen(PORT, (req, res) => {
     console.log(`App is running on ${PORT}.....`);
