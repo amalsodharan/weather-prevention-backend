@@ -1,10 +1,5 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
 import fs from 'fs';
-
-dotenv.config();
-
-const WEATHERBITKEY = process.env.WEATHERBIT_API_KEY;
 
 const mapping = JSON.parse(fs.readFileSync('weather_health_mapping.json', 'utf-8'));
 const preventionMapping = JSON.parse(fs.readFileSync('prevention.json', 'utf-8'));
@@ -32,17 +27,6 @@ function generateHealthAlerts(weather) {
         alerts.push(...mapping.humidity.low.alerts);
     }
 
-    // Conditions
-    // const condition = weather.description.toLowerCase();
-    const condition = (weather.description || "").toLowerCase();
-
-    for (let key in mapping.conditions) {
-        if (condition.includes(key.toLowerCase())) {
-            alerts.push(...mapping.conditions[key]);
-        }
-    }
-
-
     // Wind
     if (weather.wind_speed >= mapping.wind.very_high.threshold) {
         alerts.push(...mapping.wind.very_high.alerts);
@@ -50,14 +34,14 @@ function generateHealthAlerts(weather) {
         alerts.push(...mapping.wind.high.alerts);
     }
 
-    // UV index (if available in Weatherbit response)
+    // UV index
     if (weather.uv && weather.uv >= mapping.uv_index.very_high.threshold) {
         alerts.push(...mapping.uv_index.very_high.alerts);
     } else if (weather.uv && weather.uv >= mapping.uv_index.high.threshold) {
         alerts.push(...mapping.uv_index.high.alerts);
     }
 
-    // Air Quality (if available in Weatherbit response)
+    // AQI
     if (weather.aqi && weather.aqi >= mapping.air_quality.very_poor.aqi) {
         alerts.push(...mapping.air_quality.very_poor.alerts);
     } else if (weather.aqi && weather.aqi >= mapping.air_quality.poor.aqi) {
@@ -67,89 +51,113 @@ function generateHealthAlerts(weather) {
     return alerts;
 }
 
+function capitalizeFirstLetter(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+async function getCoordinates(place) {
+    const url = 'https://geocoding-api.open-meteo.com/v1/search';
+    var status = '';
+    const response = await axios.get(url, { params: { name: place, count: 1 } });
+    if (response.data.results && response.data.results.length > 0) {
+        const { latitude, longitude, name, country } = response.data.results[0];
+        status = 'success';
+        return { status, latitude, longitude, name, country };
+    }
+    status = 'failed';
+    return { status };
+}
+
 const weatherController = async (req, res) => {
-    console.log("runinng", WEATHERBITKEY)
-    const input = req.body;
+    let { city, country } = req.body;
 
-    let city, params;
-    if(input && input.city){
-        city = input.city;
+    if (!city) {
+        city = 'Chennai';
     }
 
-    const url = 'https://api.weatherbit.io/v2.0/current';
-
-    if(city){
-        params = {
-            key : WEATHERBITKEY,
-            city : city
-        }
-    }else {
-        params = {
-            key : WEATHERBITKEY,
-            city : 'London'
-        }
+    // Get coordinates
+    const placeName = country ? `${city}, ${country}` : city;
+    const geo = await getCoordinates(placeName);
+    if(geo.status == 'failed'){
+        return res.status(400).json({ message: "Unable to fetch data place deatils" });
     }
-    console.log("params===>", params)
+
+    const latitude = geo.latitude;
+    const longitude = geo.longitude;
+
+    if (!latitude || !longitude) {
+        return res.status(400).json({ message: 'Latitude and longitude required' });
+    }
+
+    const url = 'https://api.open-meteo.com/v1/forecast';
+    const params = {
+        latitude,
+        longitude,
+        current: [
+            'temperature_2m',
+            'relative_humidity_2m',
+            'wind_speed_10m',
+            'uv_index',
+            'apparent_temperature'
+        ].join(','),
+        air_quality: true
+    };
 
     try {
         const response = await axios.get(url, { params });
-        const results = response.data.data;
+        const data = response.data.current;
+        const dataUnit = response.data.current_units;
+        const air = response.data.current.air_quality || {};
 
-        const formatted = results.map((weather, index) => ({
-            index: index + 1,
-            city: weather.city_name,
-            country: weather.country_code,
-            temperature: weather.temp,
-            description: weather.weather.description,
-            wind_speed: weather.wind_spd,
-            humidity: weather.rh,
-            datetime: weather.ob_time
-        }));
+        const dateObj = new Date();
 
-        const healthOutput = generateHealthAlerts(formatted[0]);
+        const weekday = dateObj.toLocaleDateString("en-GB", { weekday: "long" });
+        const dataformatted = dateObj.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+        }).replace(",", ""); 
+
+        const formatted = {
+            temperature: data.temperature_2m,
+            humidity: data.relative_humidity_2m + dataUnit.relative_humidity_2m,
+            wind_speed: data.wind_speed_10m + dataUnit.wind_speed_10m,
+            uv: data.uv_index,
+            aqi: air.us_aqi || null,
+            datetime: dataformatted,
+            city: capitalizeFirstLetter(placeName),
+            day: weekday
+        };
+
+        const healthOutput = generateHealthAlerts(formatted);
+
         let result;
-        if(healthOutput != []){
-            let preventionOutput = [];
-            for(let key in preventionMapping){
-                if(healthOutput.includes(key)){
+        if (healthOutput.length > 0) {
+            const preventionOutput = [];
+            for (let key in preventionMapping) {
+                if (healthOutput.includes(key)) {
                     preventionOutput.push(...preventionMapping[key]);
                 }
-            }
+            }       
             result = {
                 message: 'success',
-                data:{  
-                    city: formatted[0].city,
-                    country: formatted[0].country,
-                    temperature: formatted[0].temperature,
-                    weather_condition: formatted[0].description,
+                data: {
+                    ...formatted,
                     possible_health_issues: healthOutput,
-                    preventions: preventionOutput,
-                    wind_speed: formatted[0].wind_speed,
-                    humidity: formatted[0].humidity,
-                    datetime: formatted[0].datetime,
+                    preventions: preventionOutput
                 }
             };
-        console.log("result1", result)
-        }else{
-            result = {
-                message: 'unavailable',
-                data:{
-                    city: formatted[0].city,
-                    country: formatted[0].country,
-                    temperature: formatted[0].temperature,
-                    weather_condition: formatted[0].description,
-                    wind_speed: formatted[0].wind_speed,
-                    humidity: formatted[0].humidity,
-                    datetime: formatted[0].datetime,
-                }
-            }
+        } else {
+            result = { message: 'unavailable', data: formatted };
         }
-        console.log("result2", result)
-        res.json(result)
+
+        res.json(result);
     } catch (error) {
-        console.error('Weatherbit API error:', error.message);
-        res.status(500).json({ message: 'failed', error: 'Failed to fetch weather from Weatherbit' });
+        console.error('Open-Meteo API error:', error.response?.data || error.message);
+        res.status(500).json({ message: 'failed', error: error.response?.data || error.message });
     }
-}
+};
 
 export default { weatherController };
+            
