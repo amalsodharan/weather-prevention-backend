@@ -1,13 +1,21 @@
 import axios from "axios";
 import fs from "fs";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const WEATHERAPI_KEY = process.env.WEATHERAPI_KEY;
 
-const mapping = JSON.parse(fs.readFileSync("weather_health_mapping.json", "utf-8"));
-const preventionMapping = JSON.parse(fs.readFileSync("prevention.json", "utf-8"));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const mappingPath = path.join(__dirname, '../weather_health_mapping.json');
+const preventionPath = path.join(__dirname, '../prevention.json');
+
+const mapping = JSON.parse(fs.readFileSync(mappingPath, "utf-8"));
+const preventionMapping = JSON.parse(fs.readFileSync(preventionPath, "utf-8"));
 
 function generateHealthAlerts(weather) {
   const alerts = [];
