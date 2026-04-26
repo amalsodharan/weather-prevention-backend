@@ -15,13 +15,17 @@ const PORT = process.env.PORT;
 
 
 app.get('/api', (req, res) => {
-    res.json({message: `This is a sample api`})
+    res.json({ message: `This is a sample api` })
 });
 
 app.post('/api/weather', weatherController.weatherController);
 
 app.post('/api/newweather', newWeatherController.weatherController);
 
-app.listen(PORT, (req, res) => {
-    console.log(`App is running on ${PORT}.....`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`App is running on ${PORT}.....`);
+    });
+}
+
+export default app;
